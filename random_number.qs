@@ -14,7 +14,7 @@ operation GenerateRandomBit() : Result {
 }
 
 // generate truly random number in range
-operation GetRandomNumber(max: Int) : Int {
+operation GetRandomNumber(min: Int, max: Int) : Int {
     // list holding bits' values
     // type declaration
     mutable bitValues: Result[] = [];
@@ -33,13 +33,14 @@ operation GetRandomNumber(max: Int) : Int {
 
     // if number is greater than max retry else return the number
     // interesting syntax for ternary operator...
-    return selectedNum < max ? selectedNum | GetRandomNumber(max);
+    return selectedNum < max and selectedNum > min ? selectedNum | GetRandomNumber(min, max);
 }
 
 // ;)
 @EntryPoint()
 operation Main() : Int {
+    let curMin = 30;
     let curMax = 152;
-    Message($"Random number between 0 and {curMax}: ");
-    return GetRandomNumber(curMax)
+    Message($"Random number between {curMin} and {curMax}: ");
+    return GetRandomNumber(curMin, curMax)
 }
