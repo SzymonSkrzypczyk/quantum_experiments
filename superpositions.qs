@@ -1,22 +1,38 @@
-// DumpMachine <- dumps info about current status
-import Std.Diagnostics.DumpMachine;
+import Std.Diagnostics.*;
+import Std.Math.*;
+import Std.Convert.*;
+import Std.Arrays.*;
 
-operation Main() : Result { 
-    use q = Qubit();
-    Message("Initialized qubit:");
-    DumpMachine(); // First dump
+operation MultipleQubitsSimpleExample(): Int {
+    use qubits = Qubit[3];
+    ApplyToEach(H, qubits); // useful function
+    Message("The qubit register in a uniform superposition: ");
+    DumpMachine();
+    let result = ForEach(M, qubits);
+    Message("Measuring the qubits collapses the superposition to a basis state.");
+    DumpMachine();
+    ResetAll(qubits);
+    return BoolArrayAsInt(ResultArrayAsBoolArray(result));
+}
+
+operation MultipleQubitsComplexExample(): Int {
+    use qubits = Qubit[3];
+    ApplyToEach(H, qubits);
+    Message("The qubit register in a uniform superposition: ");
+    DumpMachine();
+    mutable results = [];
+    for q in qubits {
+        Message(" ");
+        set results += [M(q)];
+        DumpMachine();
+    }
     Message(" ");
-    H(q);
-    Message("Qubit after applying H:");
-    DumpMachine(); // Second dump
-    Message(" ");
-    let randomBit = M(q);
-    Message("Qubit after the measurement:");
-    DumpMachine(); // Third dump
-    Message(" ");
-    Reset(q);
-    Message("Qubit after resetting:");
-    DumpMachine(); // Fourth dump
-    Message(" ");
-    return randomBit;
+    Message("Your random number is: ");
+    ResetAll(qubits);
+    return BoolArrayAsInt(ResultArrayAsBoolArray(results));
+}
+
+operation Main() : Unit {
+    Message($"{MultipleQubitsSimpleExample()}");
+    Message($"{MultipleQubitsComplexExample()}");
 }
